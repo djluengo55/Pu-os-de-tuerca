@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#121117" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="description" content="Peleas de robots de bloques: armá tu robot y rompé al rival a puñetazos." />
+<title>Puños de Tuerca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icono.svg">
+<link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- MENÚ -->
+<section id="menu" class="screen">
+  <div class="top-row">
+    <div class="coins"><span class="nut">⬢</span> <b id="menuCoins">0</b></div>
+    <button id="soundBtn" class="icon-btn" aria-label="Sonido">🔊</button>
+  </div>
+  <div class="menu-mid">
+    <h1 class="title">PUÑOS<br>DE TUERCA</h1>
+    <p id="menuLevel" class="sub">Nivel 1</p>
+  </div>
+  <div class="menu-bottom">
+    <button id="playBtn" class="btn big">¡A PELEAR!</button>
+    <button id="garageBtn" class="btn alt">GARAJE</button>
+    <p id="menuStats" class="tiny"></p>
+  </div>
+</section>
+
+<!-- GARAJE -->
+<section id="garage" class="screen hidden">
+  <div class="top-row">
+    <button id="garageBack" class="icon-btn" aria-label="Volver">←</button>
+    <div class="coins"><span class="nut">⬢</span> <b id="garageCoins">0</b></div>
+  </div>
+  <div class="garage-panel">
+    <div id="tabs" class="tabs"></div>
+    <div id="cards" class="cards"></div>
+    <button id="garageFight" class="btn">¡A PELEAR!</button>
+  </div>
+</section>
+
+<!-- HUD DE PELEA -->
+<section id="hud" class="hidden">
+  <div class="bars">
+    <div class="bar-wrap">
+      <div class="bar-name">VOS</div>
+      <div class="bar"><div id="barP" class="fill p"></div></div>
+    </div>
+    <div id="timer" class="timer">75</div>
+    <div class="bar-wrap right">
+      <div id="enemyName" class="bar-name">RIVAL</div>
+      <div class="bar"><div id="barE" class="fill e"></div></div>
+    </div>
+  </div>
+  <button id="pauseBtn" class="icon-btn pause" aria-label="Pausa">II</button>
+  <div id="combo" class="combo"></div>
+  <div id="msg" class="msg"></div>
+  <div id="hint" class="hint">Mantené apretado y arrastrá para moverte<br>Soltá para pegar</div>
+  <div id="stick" class="stick"><div id="stickDot" class="stick-dot"></div></div>
+</section>
+
+<!-- PAUSA -->
+<section id="pause" class="screen dim hidden">
+  <div class="panel">
+    <h2>PAUSA</h2>
+    <button id="resumeBtn" class="btn">SEGUIR</button>
+    <button id="quitBtn" class="btn alt">RENDIRSE</button>
+  </div>
+</section>
+
+<!-- RESULTADO -->
+<section id="result" class="screen dim hidden">
+  <div class="panel">
+    <h2 id="resTitle">¡VICTORIA!</h2>
+    <div id="resLines" class="res-lines"></div>
+    <div class="res-total"><span class="nut">⬢</span> <b id="resTotal">0</b></div>
+    <button id="nextBtn" class="btn big">SIGUIENTE</button>
+    <div class="row">
+      <button id="resGarage" class="btn alt">GARAJE</button>
+      <button id="resMenu" class="btn alt">MENÚ</button>
+    </div>
+  </div>
+</section>
+
+<!-- PIEZAS NUEVAS -->
+<section id="unlock" class="screen dim hidden">
+  <div class="panel">
+    <h2 class="glow-title">¡PIEZAS NUEVAS!</h2>
+    <div id="unlockList" class="unlock-list"></div>
+    <button id="unlockGo" class="btn big">VER EN EL GARAJE</button>
+    <button id="unlockClose" class="btn alt">DESPUÉS</button>
+  </div>
+</section>
+
+<div id="loading" class="loading">Cargando…</div>
+<script type="module" src="juego.js"></script>
+</body>
+</html>
