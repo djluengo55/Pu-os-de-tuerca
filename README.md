@@ -2,12 +2,14 @@
 
 Peleas de robots de bloques para el celular. Armá tu robot en el garaje y rompé al rival a puñetazos.
 
-**Jugar:** https://djluengo55.github.io/punch-de-tuerca/
+**Jugar:** https://djluengo55.github.io/Pu-os-de-tuerca/
 
 ## Cómo se juega
 - Mantené apretado y arrastrá: tu robot se mueve a los costados, se agacha o se estira.
 - Soltá: lanza un golpe (alterna brazo izquierdo y derecho). Cuanto más tiempo apretás, más fuerte pega.
 - Ganás rompiéndole la cabeza, destrozándole el torso o reventándole el núcleo. También le podés arrancar brazos y piernas.
+- Los robots ruedan de costado. Cada rival tiene su estilo de pelea: Boxeador, Tanque, Saltarín, Torre, Bólido y Mordelón.
+- En el garaje, la pestaña **Estilo** cambia ojos, adornos, boca, forma del torso y color de detalle.
 - En la compu: flechas/WASD para moverte y espacio para cargar y soltar.
 
 ## Archivos
