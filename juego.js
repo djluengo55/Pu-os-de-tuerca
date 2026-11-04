@@ -1289,7 +1289,7 @@ function show(id, overlay = false) {
 }
 function refreshMenu() {
   $('#menuCoins').textContent = save.coins;
-  $('#menuLevel').textContent = `Nivel ${save.level}`;
+  $('#menuLevel').textContent = `Nivel ${save.level}` + (save.creator ? ' · MODO CREADOR' : '');
   const s = save.stats;
   $('#menuStats').textContent = s.wins + s.losses ? `${s.wins} victorias · ${s.kos} nocauts · ${s.limbs} miembros arrancados` : 'Arrastrá para moverte, soltá para pegar.';
   $('#soundBtn').textContent = save.sound ? '🔊' : '🔇';
@@ -1364,7 +1364,7 @@ function renderGarage() {
   }
   if (gTab === 'up') {
     for (const u of UPGRADES) {
-      const lv = save.up[u.id], cost = upCost(lv), max = lv >= MAX_UP;
+      const lv = save.up[u.id], cost = save.creator ? 0 : upCost(lv), max = lv >= MAX_UP;
       const row = document.createElement('div'); row.className = 'up-row';
       row.innerHTML = `<div><div class="cname">${u.name}</div><div class="cdesc">${u.desc}</div></div>
         <button class="cbtn ${max ? 'eq' : save.coins < cost ? 'no' : ''}">${max ? 'MÁX' : '⬢ ' + cost}</button>
@@ -1379,7 +1379,8 @@ function renderGarage() {
   }
   const entries = Object.entries(slot.cat).sort((a, b) => a[1].lvl - b[1].lvl);
   for (const [id, d] of entries) {
-    const owned = !!save.owned[id], locked = d.lvl > save.level, equipped = save.equip[gTab] === id, sel = gPreview[gTab] === id;
+    const price = save.creator ? 0 : d.price;
+    const owned = !!save.owned[id], locked = !save.creator && d.lvl > save.level, equipped = save.equip[gTab] === id, sel = gPreview[gTab] === id;
     if (!locked && !owned) save.seen[id] = 1;
     const card = document.createElement('div');
     card.className = 'card' + (sel ? ' sel' : '') + (locked ? ' locked' : '');
@@ -1387,7 +1388,7 @@ function renderGarage() {
     if (locked) btn = `<button class="cbtn no">🔒 Nv.${d.lvl}</button>`;
     else if (equipped) btn = `<button class="cbtn eq">PUESTO</button>`;
     else if (owned) btn = `<button class="cbtn">PONER</button>`;
-    else btn = `<button class="cbtn ${save.coins < d.price ? 'no' : ''}">⬢ ${d.price}</button>`;
+    else btn = `<button class="cbtn ${save.coins < price ? 'no' : ''}">${price ? '⬢ ' + price : 'GRATIS'}</button>`;
     card.innerHTML = `<div class="cname">${d.name}</div>${btn}<div class="cdesc">${d.desc}</div>
       <div class="cstats">${statsOf(gTab, d).map(([n, v]) => `<span>${n}</span><div class="sbar"><i style="width:${clamp(v, 0.05, 1) * 100}%"></i></div>`).join('')}</div>`;
     // tocar la tarjeta: probártela; tocar el botón: comprar / poner
@@ -1399,8 +1400,8 @@ function renderGarage() {
     };
     card.querySelector('button').onclick = (e) => {
       e.stopPropagation();
-      if (locked || (!owned && save.coins < d.price)) { Sfx.block(); card.onclick(); return; }
-      if (!owned) { save.coins -= d.price; save.owned[id] = 1; Sfx.coin(); Sfx.coin(1); }
+      if (locked || (!owned && save.coins < price)) { Sfx.block(); card.onclick(); return; }
+      if (!owned) { save.coins -= price; save.owned[id] = 1; Sfx.coin(); Sfx.coin(1); }
       gPreview[gTab] = id; save.equip[gTab] = id;
       persist(); rebuildPlayer(gPreview); renderGarage();
     };
@@ -1408,6 +1409,24 @@ function renderGarage() {
   }
   persist();
 }
+
+// ---------- modo creador: tocar el título 5 veces seguidas (o abrir con ?creador) ----------
+let titleTaps = 0, titleTimer = 0;
+function setCreator(on) {
+  save.creator = on; persist(); refreshMenu();
+  popMenuNote(on ? 'Modo creador activado: todo desbloqueado y gratis' : 'Modo creador desactivado');
+  on ? Sfx.win() : Sfx.lose();
+}
+function popMenuNote(text) {
+  const n = $('#menuStats'); const prev = n.textContent; n.textContent = text; n.style.color = 'var(--acc)';
+  setTimeout(() => { n.style.color = ''; refreshMenu(); }, 2500);
+}
+$('.title').addEventListener('click', () => {
+  Sfx.init(); titleTaps++; clearTimeout(titleTimer);
+  titleTimer = setTimeout(() => { titleTaps = 0; }, 1500);
+  if (titleTaps >= 5) { titleTaps = 0; setCreator(!save.creator); }
+});
+if (new URLSearchParams(location.search).has('creador') && !save.creator) { save.creator = true; persist(); }
 
 // ---------- botones ----------
 const on = (id, fn) => $(id).addEventListener('click', () => { Sfx.init(); Sfx.click(); fn(); });
