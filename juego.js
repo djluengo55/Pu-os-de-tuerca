@@ -1447,11 +1447,32 @@ const standalone = () => matchMedia('(display-mode: standalone)').matches || mat
 if (!standalone()) $('#installBtn').classList.remove('hidden');
 addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; $('#installBtn').classList.add('hidden'); });
+const SHARE_ICON = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+const ADD_ICON = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
 function installHelp() {
-  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  $('#installText').innerHTML = ios
-    ? 'Para tenerlo como app en el iPhone:<ol><li>Abrí este link en <b>Safari</b>.</li><li>Tocá el botón <b>Compartir</b> (el cuadrado con la flecha).</li><li>Elegí <b>Agregar a inicio</b>.</li></ol>'
-    : 'Para tenerlo como app:<ol><li>Tocá el menú <b>⋮</b> del navegador (arriba a la derecha).</li><li>Elegí <b>Instalar app</b> o <b>Agregar a la pantalla principal</b>.</li></ol>';
+  const ua = navigator.userAgent;
+  const ios = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const ipad = /ipad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const inApp = /FBAN|FBAV|Instagram|Line\/|WhatsApp|Twitter|TikTok|musical_ly|Snapchat/i.test(ua);
+  const otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua);
+  let html;
+  if (ios && inApp) {
+    html = `Estás dentro de otra app y desde acá no se puede instalar.<ol>
+      <li>Tocá el menú (<b>•••</b> o <b>⋯</b>) de arriba.</li>
+      <li>Elegí <b>Abrir en Safari</b>.</li>
+      <li>En Safari, tocá <b>DESCARGAR</b> de nuevo.</li></ol>`;
+  } else if (ios) {
+    const where = otherBrowser ? 'en la barra de direcciones (arriba)' : ipad ? 'arriba a la derecha' : 'en la barra de abajo';
+    html = `Para tenerlo como app en tu ${ipad ? 'iPad' : 'iPhone'}:<ol>
+      <li>Tocá el botón <b>Compartir</b> ${SHARE_ICON} ${where}.<br><small>Si no lo ves, tocá <b>•••</b> y después <b>Compartir</b>.</small></li>
+      <li>Bajá un poco y tocá <b>Agregar a inicio</b> ${ADD_ICON}</li>
+      <li>Tocá <b>Agregar</b> arriba a la derecha.</li></ol>
+      <small>Va a aparecer el ícono en tu pantalla de inicio y se abre a pantalla completa, sin la barra del navegador.</small>`;
+  } else {
+    html = 'Para tenerlo como app:<ol><li>Tocá el menú <b>⋮</b> del navegador (arriba a la derecha).</li><li>Elegí <b>Instalar app</b> o <b>Agregar a la pantalla principal</b>.</li></ol>';
+  }
+  $('#installText').innerHTML = html;
+  $('#installArrow').classList.toggle('hidden', !(ios && !inApp && !otherBrowser && !ipad));
   show('install', true);
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
