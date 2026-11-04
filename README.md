@@ -9,6 +9,7 @@ Peleas de robots de bloques para el celular. Armá tu robot en el garaje y romp�
 - Soltá: lanza un golpe (alterna brazo izquierdo y derecho). Cuanto más tiempo apretás, más fuerte pega.
 - Ganás rompiéndole la cabeza, destrozándole el torso o reventándole el núcleo. También le podés arrancar brazos y piernas.
 - Los robots ruedan de costado. Cada rival tiene su estilo de pelea: Boxeador, Tanque, Saltarín, Torre, Bólido y Mordelón.
+- En el garaje, la pestaña **Cuerpo** cambia el largo de piernas, brazos y cuello y el alto y ancho del torso.
 - En el garaje, la pestaña **Estilo** cambia ojos, adornos, boca, forma del torso y color de detalle.
 - En la compu: flechas/WASD para moverte y espacio para cargar y soltar.
 

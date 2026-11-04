@@ -24,11 +24,11 @@ const ARMS = {
   plasma:   { name: 'Puño de plasma',      price: 2200, lvl: 12, power: 1.75, speed: 1.1,  reach: 1.05, radius: 0.12,  blast: 0.30, hp: 52, fist: 'plasma', desc: 'Derrite todo lo que toca.' },
 };
 const LEGS = {
-  basicas:  { name: 'Patas con rueditas', price: 0,    lvl: 1, height: 0.85, vrange: 0.30, mob: 3.0, hp: 55,  stab: 1.0, type: 'leg',    desc: 'Las de fábrica: ruedan de costado.' },
-  zancos:   { name: 'Zancos',             price: 300,  lvl: 3, height: 1.05, vrange: 0.42, mob: 2.6, hp: 45,  stab: 0.8, type: 'stilt',  desc: 'Altura para pegar a la cabeza.' },
-  ruedas:   { name: 'Ruedas todoterreno', price: 500,  lvl: 4, height: 0.75, vrange: 0.28, mob: 5.0, hp: 70,  stab: 1.1, type: 'wheel',  desc: 'Ruedas dobles: esquivá rapidísimo.' },
-  resortes: { name: 'Resortes',           price: 800,  lvl: 6, height: 0.90, vrange: 0.50, mob: 4.2, hp: 55,  stab: 0.9, type: 'spring', desc: 'Agacharse y estirarse al máximo.' },
-  orugas:   { name: 'Orugas blindadas',   price: 1200, lvl: 8, height: 0.70, vrange: 0.26, mob: 3.2, hp: 140, stab: 1.8, type: 'tread',  desc: 'Casi no te empujan.' },
+  basicas:  { name: 'Patas con rueditas', price: 0,    lvl: 1, height: 0.85, vrange: 0.42, mob: 3.0, hp: 55,  stab: 1.0, type: 'leg',    desc: 'Las de fábrica: ruedan de costado.' },
+  zancos:   { name: 'Zancos',             price: 300,  lvl: 3, height: 1.05, vrange: 0.55, mob: 2.6, hp: 45,  stab: 0.8, type: 'stilt',  desc: 'Altura para pegar a la cabeza.' },
+  ruedas:   { name: 'Ruedas todoterreno', price: 500,  lvl: 4, height: 0.75, vrange: 0.38, mob: 5.0, hp: 70,  stab: 1.1, type: 'wheel',  desc: 'Ruedas dobles: esquivá rapidísimo.' },
+  resortes: { name: 'Resortes',           price: 800,  lvl: 6, height: 0.90, vrange: 0.62, mob: 4.2, hp: 55,  stab: 0.9, type: 'spring', desc: 'Agacharse y estirarse al máximo.' },
+  orugas:   { name: 'Orugas blindadas',   price: 1200, lvl: 8, height: 0.70, vrange: 0.34, mob: 3.2, hp: 140, stab: 1.8, type: 'tread',  desc: 'Casi no te empujan.' },
 };
 const TORSOS = {
   lata:    { name: 'Chasis de lata',      price: 0,    lvl: 1,  w: 7, h: 9,  d: 3, hp: 1.0, shape: 'taper', desc: 'Se abolla con mirarlo.' },
@@ -47,6 +47,13 @@ const ALL = { ...ARMS, ...LEGS, ...TORSOS, ...HEADS };
 const COLORS = ['#3fa9ff', '#ffb21f', '#2fe39a', '#ff4f6d', '#c86bff', '#eeeeee', '#ff7a1a', '#25d9e8', '#a4ff3a', '#6b7080'];
 const ENEMY_COLORS = ['#ff2d6f', '#b44dff', '#ff5a36', '#36d67a', '#e8e23a', '#22c3ee', '#ff8a1f', '#e94cff'];
 const NAMES = ['Chatarrín', 'Tornillo', 'Bulón', 'Remache', 'Engranaje', 'Cigüeñal', 'Pistón', 'Bujía', 'Carburador', 'Arandela', 'Diferencial', 'Burlete', 'Chaveta', 'Tuerquito', 'Cardán', 'Manivela'];
+const PROP_OPTS = [
+  { id: 'legLen', label: 'Largo de piernas', opts: [[0.8, 'Cortas'], [1, 'Normales'], [1.2, 'Largas']] },
+  { id: 'torsoH', label: 'Alto del torso', opts: [[-2, 'Petiso'], [0, 'Normal'], [2, 'Alto']] },
+  { id: 'torsoW', label: 'Ancho de espalda', opts: [[-2, 'Angosta'], [0, 'Normal'], [2, 'Ancha']] },
+  { id: 'armLen', label: 'Largo de brazos (más largo = más alcance, más lento)', opts: [[0.9, 'Cortos'], [1, 'Normales'], [1.12, 'Largos']] },
+  { id: 'neck', label: 'Cuello', opts: [[0, 'Corto'], [1, 'Largo']] },
+];
 const LOOK_OPTS = [
   { id: 'eyes', label: 'Ojos', opts: [['saltones', 'Saltones'], ['enojado', 'Enojados'], ['ciclope', 'Cíclope'], ['pantalla', 'Pantalla']] },
   { id: 'deco', label: 'Adorno', opts: [['nada', 'Nada'], ['antena', 'Antena'], ['cuernos', 'Cuernos'], ['cresta', 'Cresta'], ['orejas', 'Orejas']] },
@@ -60,13 +67,13 @@ const ARCHES = [
   { name: 'Boxeador', arms: ['puno', 'bola', 'plasma'], legs: ['basicas', 'ruedas'], torso: ['lata', 'acero', 'titanio'], head: ['basica', 'casco'],
     ai: { aggr: 1.1, dodge: 1, heavy: 0.5, head: 0.55, wander: 0.25 }, look: { shape: 'T', eyes: ['enojado', 'saltones'], deco: ['nada', 'orejas'] } },
   { name: 'Tanque', arms: ['bola', 'martillo'], legs: ['orugas', 'basicas'], torso: ['ancho', 'neutron', 'acero'], head: ['casco', 'blindada', 'basica'],
-    ai: { aggr: 0.75, dodge: 0.35, heavy: 0.85, head: 0.3, wander: 0.1 }, look: { shape: 'barril', eyes: ['enojado', 'pantalla'], deco: ['cuernos'], mouth: 'rejilla' } },
+    ai: { aggr: 0.75, dodge: 0.35, heavy: 0.85, head: 0.3, wander: 0.1 }, look: { shape: 'barril', eyes: ['enojado', 'pantalla'], deco: ['cuernos'], mouth: 'rejilla', legLen: 0.8, torsoW: 2, neck: 0, armLen: [0.9, 1] } },
   { name: 'Saltarín', arms: ['puno', 'taladro', 'largo'], legs: ['resortes', 'basicas'], torso: ['lata', 'titanio'], head: ['mini', 'basica'],
-    ai: { aggr: 1.4, dodge: 1.5, heavy: 0.15, head: 0.6, wander: 0.6 }, look: { eyes: ['saltones', 'ciclope'], deco: ['antena'] } },
+    ai: { aggr: 1.4, dodge: 1.5, heavy: 0.15, head: 0.6, wander: 0.6 }, look: { eyes: ['saltones', 'ciclope'], deco: ['antena'], torsoH: -2, torsoW: [-2, 0] } },
   { name: 'Torre', arms: ['largo', 'cohete'], legs: ['zancos', 'resortes'], torso: ['lata', 'titanio'], head: ['basica', 'casco'],
-    ai: { aggr: 0.9, dodge: 0.8, heavy: 0.6, head: 0.9, wander: 0.3 }, look: { shape: 'piramide', eyes: ['ciclope', 'saltones'], deco: ['cresta', 'antena'] } },
+    ai: { aggr: 0.9, dodge: 0.8, heavy: 0.6, head: 0.9, wander: 0.3 }, look: { shape: 'piramide', eyes: ['ciclope', 'saltones'], deco: ['cresta', 'antena'], legLen: 1.2, torsoH: [0, 2], neck: 1, armLen: 1.12, torsoW: [-2, 0] } },
   { name: 'Bólido', arms: ['puno', 'cohete', 'taladro'], legs: ['ruedas', 'basicas'], torso: ['lata', 'acero'], head: ['basica', 'mini'],
-    ai: { aggr: 1.2, dodge: 1.2, heavy: 0.35, head: 0.5, wander: 0.9 }, look: { shape: 'caja', eyes: ['pantalla', 'saltones'], deco: ['antena', 'nada'], mouth: 'dientes' } },
+    ai: { aggr: 1.2, dodge: 1.2, heavy: 0.35, head: 0.5, wander: 0.9 }, look: { shape: 'caja', eyes: ['pantalla', 'saltones'], deco: ['antena', 'nada'], mouth: 'dientes', legLen: [0.8, 1] } },
   { name: 'Mordelón', arms: ['bola', 'puno', 'martillo'], legs: ['basicas', 'orugas'], torso: ['lata', 'ancho'], head: ['basica', 'casco'],
     ai: { aggr: 1.5, dodge: 0.6, heavy: 0.4, head: 0.5, wander: 0.2 }, look: { eyes: ['enojado'], deco: ['nada', 'cuernos'], mouth: 'dientes' } },
 ];
@@ -85,7 +92,7 @@ const defaultSave = () => ({
   owned: { puno: 1, basicas: 1, lata: 1, basica: 1 },
   equip: { armL: 'puno', armR: 'puno', legs: 'basicas', torso: 'lata', head: 'basica' },
   color: '#3fa9ff', up: { fuerza: 0, velocidad: 0, blindaje: 0 }, seen: {},
-  look: { eyes: 'saltones', deco: 'nada', mouth: 'nada', shape: 'auto', twoTone: false, accent: '#2b2b33' },
+  look: { eyes: 'saltones', deco: 'nada', mouth: 'nada', shape: 'auto', twoTone: false, accent: '#2b2b33', legLen: 1, torsoH: 0, torsoW: 0, armLen: 1, neck: 0 },
   stats: { wins: 0, losses: 0, kos: 0, limbs: 0 },
 });
 function loadSave() {
@@ -352,7 +359,7 @@ function makeFist(def, mat) {
 }
 
 // ================= robot =================
-const LAT = 0.8;    // desplazamiento lateral máximo (rueda de lado)
+const LAT = 1.05;   // desplazamiento lateral máximo (rueda de lado)
 const DIST = 0.55;  // distancia de cada robot al centro
 
 // resorte amortiguado de una dimensión: da el movimiento "articulado" con inercia y rebote
@@ -361,7 +368,7 @@ class Spring {
   step(target, h) { this.v += ((target - this.x) * this.k - this.v * this.d) * h; this.x += this.v * h; return this.x; }
 }
 
-const LOOK_DEFAULT = { eyes: 'saltones', deco: 'nada', mouth: 'nada', shape: 'auto', twoTone: false, accent: '#2b2b33' };
+const LOOK_DEFAULT = { eyes: 'saltones', deco: 'nada', mouth: 'nada', shape: 'auto', twoTone: false, accent: '#2b2b33', legLen: 1, torsoH: 0, torsoW: 0, armLen: 1, neck: 0 };
 const SHAPES = {
   taper: (x, y, w) => y >= 3 || (x >= 1 && x <= w - 2),
   v: (x, y, w) => (y >= 4 ? true : y >= 2 ? x >= 1 && x <= w - 2 : x >= 2 && x <= w - 3),
@@ -375,7 +382,11 @@ class Robot {
   constructor(cfg, side) {
     this.cfg = cfg; this.side = side; this.isPlayer = side > 0;
     this.look = { ...LOOK_DEFAULT, ...(cfg.look || {}) };
-    this.T = TORSOS[cfg.torso]; this.H = HEADS[cfg.head]; this.Lg = LEGS[cfg.legs];
+    const lk = this.look;
+    this.T = { ...TORSOS[cfg.torso] }; this.H = HEADS[cfg.head]; this.Lg = { ...LEGS[cfg.legs] };
+    this.T.w = Math.max(5, this.T.w + (lk.torsoW | 0)); this.T.h = Math.max(6, this.T.h + (lk.torsoH | 0));
+    this.Lg.height *= lk.legLen || 1; this.Lg.vrange *= lk.legLen || 1;
+    this.armLen = lk.armLen || 1;
     const up = cfg.up || { fuerza: 0, velocidad: 0, blindaje: 0 };
     this.powMul = 1 + 0.1 * up.fuerza; this.spdMul = 1 + 0.07 * up.velocidad; this.armMul = 1 + 0.12 * up.blindaje;
     this.chargeTime = 0.85 / (1 + 0.04 * up.velocidad);
@@ -412,10 +423,17 @@ class Robot {
     this.update(0);
   }
   placeForFight() { this.root.position.set(0, 0, this.side * DIST); this.root.rotation.set(0, this.side > 0 ? 0 : Math.PI, 0); }
-  setGhost(on) {
-    // en la pelea tu cuerpo se ve medio transparente para no tapar al rival
-    for (const m of [this.voxMat, this.coreMat]) { m.transparent = on; m.opacity = on ? 0.42 : 1; m.depthWrite = !on; m.needsUpdate = true; }
-    for (const e of this.eyes) e.obj.visible = !on;
+  setGhost() {
+    // tu robot se ve al 25%: así siempre ves al rival a través de él
+    const map = new Map();
+    this.root.traverse((o) => {
+      if (!o.isMesh) return;
+      let c = map.get(o.material);
+      if (!c) { c = o.material.clone(); c.transparent = true; c.opacity = 0.25; c.depthWrite = false; map.set(o.material, c); }
+      o.material = c;
+    });
+    this.voxMat = map.get(this.voxMat) || this.voxMat; this.coreMat = map.get(this.coreMat) || this.coreMat;
+    this.shadow.visible = true;
   }
   dispose() {
     scene.remove(this.root); this.mat.dispose(); this.voxMat.dispose(); this.accMat.dispose();
@@ -435,7 +453,7 @@ class Robot {
       body.push({ p: V((x - cw) * VS, (y + 0.5) * VS, (z - cd) * VS), hp: bhp, max: bhp, core, shade: rand(0.86, 1.06) });
     }
     // cabeza (en su propio grupo para que pueda bambolearse)
-    const hb = this.tH + VS * 0.4; this.headBase = hb; this.head.position.set(0, hb, 0);
+    const neckH = VS * (0.6 + 2.2 * (lk.neck || 0)), hb = this.tH + neckH - VS * 0.2; this.headBase = hb; this.head.position.set(0, hb, 0);
     const hw = (H.w - 1) / 2, hd = (H.d - 1) / 2, hhp = H.hp * this.armMul;
     for (let y = 0; y < H.h; y++) for (let x = 0; x < H.w; x++) for (let z = 0; z < H.d; z++) {
       const v = { p: V((x - hw) * VS, (y + 0.5) * VS, (z - hd) * VS), hp: hhp, max: hhp, shade: rand(0.86, 1.06) };
@@ -473,8 +491,9 @@ class Robot {
     this.coreMat = new THREE.MeshStandardMaterial({ color: 0xfff1a8, emissive: 0xffc21a, emissiveIntensity: 2 });
     this.coreMesh = new THREE.Mesh(new THREE.BoxGeometry(VS * 0.95, VS * 0.95, VS * 0.95), this.coreMat);
     this.coreMesh.position.copy(this.core.p); this.torso.add(this.coreMesh);
-    const neck = new THREE.Mesh(new THREE.BoxGeometry(VS * 1.6, VS * 0.6, VS * 1.6), darkMetal);
-    neck.position.set(0, this.tH + VS * 0.2, 0); this.torso.add(neck);
+    const neckLen = this.headBase - this.tH + VS * 0.2;
+    const neck = new THREE.Mesh(new THREE.BoxGeometry(VS * 1.4, neckLen, VS * 1.4), darkMetal);
+    neck.position.set(0, this.tH + neckLen / 2 - VS * 0.1, 0); this.torso.add(neck);
 
     // ojos y adornos que no son bloques
     this.eyes = [];
@@ -523,7 +542,9 @@ class Robot {
 
   _buildArms() {
     this.arms = [this.cfg.armL, this.cfg.armR].map((id, i) => {
-      const def = ARMS[id], sgn = i === 0 ? -1 : 1, th = def.thin ? 0.055 : 0.072;
+      const base = ARMS[id], k = this.armLen;
+      const def = { ...base, reach: base.reach * k, fly: base.fly && base.fly * k, speed: base.speed / Math.sqrt(k) };
+      const sgn = i === 0 ? -1 : 1, th = def.thin ? 0.055 : 0.072;
       const a = {
         def, sgn, i, L1: def.reach / 2, L2: def.reach / 2, hp: def.hp * this.armMul, lost: false,
         state: 'guard', t: 0, charge: 0, queued: null, power: 0, crit: false, hitDone: false, lastTick: 0, dur: 0.15, rdur: 0.18,
@@ -559,13 +580,17 @@ class Robot {
     this.wheelR = L.type === 'wheel' ? 0.11 : L.type === 'tread' ? 0.06 : 0.065;
     this.footY = L.type === 'tread' ? 0.075 : this.wheelR;
     this.stance = L.type === 'tread' ? 0.22 : 0.2;
+    this.ankleH = L.type === 'tread' ? 0.07 : this.wheelR + 0.01;
     this.legs = [-1, 1].map((sgn) => {
       const th = L.type === 'stilt' ? 0.045 : L.type === 'tread' ? 0.09 : 0.07;
-      const l = { sgn, L1: len, L2: len, hp: L.hp * this.armMul, lost: false, hip: V(), knee: V(), foot: V(), wheels: [] };
+      const l = { sgn, L1: len * 1.04, L2: len * 0.96, hp: L.hp * this.armMul, lost: false, hip: V(), knee: V(), foot: V(), ankle: V(), wheels: [] };
       l.max = l.hp;
       l.upper = new THREE.Mesh(segGeo(th), L.type === 'stilt' ? metalMat : this.limbMat);
       l.lower = L.type === 'spring' ? new THREE.Mesh(springGeo, metalMat) : new THREE.Mesh(segGeo(th * 0.9), L.type === 'stilt' ? metalMat : this.limbMat);
-      l.kneeJ = new THREE.Mesh(jointGeo, darkMetal); l.kneeJ.scale.setScalar(th * 0.75);
+      l.kneeJ = new THREE.Mesh(jointGeo, darkMetal); l.kneeJ.scale.setScalar(th * 0.85);
+      l.hipJ = new THREE.Mesh(jointGeo, darkMetal); l.hipJ.scale.setScalar(th * 0.8);
+      l.ankleJ = new THREE.Mesh(jointGeo, darkMetal); l.ankleJ.scale.setScalar(th * 0.6);
+      l.kneeCap = new THREE.Mesh(new THREE.BoxGeometry(th * 1.3, th * 1.3, th * 0.5), this.mat);
       const f = new THREE.Group();
       const wheel = (r, w) => {
         const g = new THREE.Group();
@@ -584,7 +609,7 @@ class Robot {
         if (L.type === 'wheel') { const w2 = wheel(this.wheelR, 0.08); w2.position.z = 0.12; f.add(w2); l.wheels.push(w2); w.position.z = -0.06; w2.position.z = 0.06; }
       }
       l.footObj = f;
-      this.root.add(l.upper, l.lower, l.kneeJ, f);
+      this.root.add(l.upper, l.lower, l.kneeJ, l.hipJ, l.ankleJ, l.kneeCap, f);
       return l;
     });
     this.pelvis = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.06, 0.12), darkMetal);
@@ -707,7 +732,7 @@ class Robot {
   sever(kind, l, dirW) {
     if (l.lost) return;
     l.lost = true; this.limbsLost++;
-    const parts = kind === 'arm' ? [l.upper, l.fore, l.elbowJ, l.fistObj, l.cable].filter(Boolean) : [l.upper, l.lower, l.kneeJ, l.footObj];
+    const parts = kind === 'arm' ? [l.upper, l.fore, l.elbowJ, l.fistObj, l.cable].filter(Boolean) : [l.upper, l.lower, l.kneeJ, l.kneeCap, l.ankleJ, l.footObj];
     if (kind === 'arm') {
       l.state = 'lost';
       if (this.chargeArm === l) { this.charging = false; this.chargeArm = null; if (this === hummer) { Sfx.humStop(); hummer = null; } }
@@ -757,7 +782,8 @@ class Robot {
     this.bvx += this.ax * h; this.bx += this.bvx * h;
     if (Math.abs(this.bx) > LAT + 0.1) { this.bx = Math.sign(this.bx) * (LAT + 0.1); this.bvx *= -0.3; }
     // altura de cadera
-    let hipT = L.height + this.oy * L.vrange;
+    // al rodar rápido flexiona las rodillas
+    let hipT = L.height + this.oy * L.vrange - Math.min(0.08, Math.abs(this.bvx) * 0.04);
     if (lostLegs === 1) hipT *= 0.72;
     if (lostLegs === 2) hipT = 0.16;
     if (this.dead) hipT = 0.12;
@@ -823,9 +849,13 @@ class Robot {
       if (l.lost) continue;
       l.hip.set(l.sgn * 0.15, 0, 0).applyMatrix4(tm);
       l.foot.set(this.bx + l.sgn * this.stance, this.footY, 0.03);
-      ik2(l.hip, l.foot, l.L1, l.L2, _pole.set(l.sgn * 0.25, 0, -1), l.knee, _t3);
-      placeSeg(l.upper, l.hip, l.knee); placeSeg(l.lower, l.knee, l.foot);
-      l.kneeJ.position.copy(l.knee); l.footObj.position.copy(l.foot);
+      l.ankle.set(l.foot.x, l.foot.y + this.ankleH, l.foot.z);
+      // las rodillas apuntan adelante y un poco hacia afuera; se abren más al rodar rápido
+      ik2(l.hip, l.ankle, l.L1, l.L2, _pole.set(l.sgn * 0.35 + this.bvx * 0.25, 0.05, -1), l.knee, _t3);
+      placeSeg(l.upper, l.hip, l.knee); placeSeg(l.lower, l.knee, _t3);
+      l.kneeJ.position.copy(l.knee); l.hipJ.position.copy(l.hip); l.ankleJ.position.copy(_t3);
+      l.kneeCap.position.copy(l.knee).add(_t2.set(0, 0, -0.03)); l.kneeCap.quaternion.copy(l.upper.quaternion);
+      l.footObj.position.copy(l.foot);
       for (const w of l.wheels) w.rotation.z -= dx / (this.Lg.type === 'tread' ? 0.06 : this.wheelR);
     }
     this.shadow.position.x = this.bx + this.sway.x * 0.5;
@@ -1080,6 +1110,7 @@ function makeEnemy(level) {
     eyes: one(L.eyes || pick(LOOK_OPTS[0].opts)[0]), deco: one(L.deco || 'nada'), mouth: one(L.mouth || pick(['nada', 'dientes', 'rejilla'])),
     shape: L.shape || 'auto', twoTone: Math.random() < 0.5, accent: pick(ACCENTS),
   };
+  for (const g of PROP_OPTS) look[g.id] = L[g.id] != null ? one(L[g.id]) : pick(g.opts)[0];
   const cfg = {
     armL: lvl1 ? 'puno' : choose(ARMS, arch.arms), armR: lvl1 ? 'puno' : choose(ARMS, arch.arms),
     legs: lvl1 ? 'basicas' : choose(LEGS, arch.legs), torso: lvl1 ? 'lata' : choose(TORSOS, arch.torso), head: lvl1 ? 'basica' : choose(HEADS, arch.head),
@@ -1269,7 +1300,7 @@ function refreshMenu() {
 const SLOTS = [
   { id: 'armL', label: 'Brazo izq.', cat: ARMS }, { id: 'armR', label: 'Brazo der.', cat: ARMS },
   { id: 'legs', label: 'Piernas', cat: LEGS }, { id: 'torso', label: 'Torso', cat: TORSOS }, { id: 'head', label: 'Cabeza', cat: HEADS },
-  { id: 'up', label: 'Mejoras' }, { id: 'paint', label: 'Pintura' }, { id: 'style', label: 'Estilo' },
+  { id: 'up', label: 'Mejoras' }, { id: 'paint', label: 'Pintura' }, { id: 'style', label: 'Estilo' }, { id: 'body', label: 'Cuerpo' },
 ];
 let gTab = 'armR', gPreview = null;
 function statsOf(slot, d) {
@@ -1308,8 +1339,8 @@ function renderGarage() {
     }
     box.appendChild(g); return;
   }
-  if (gTab === 'style') {
-    for (const g of LOOK_OPTS) {
+  if (gTab === 'style' || gTab === 'body') {
+    for (const g of gTab === 'body' ? PROP_OPTS : LOOK_OPTS) {
       const row = document.createElement('div'); row.className = 'up-row';
       row.innerHTML = `<div class="cname" style="grid-column:1/3">${g.label}</div><div class="chips" style="grid-column:1/3"></div>`;
       const chips = row.querySelector('.chips');
@@ -1320,6 +1351,7 @@ function renderGarage() {
       }
       box.appendChild(row);
     }
+    if (gTab === 'body') return;
     const row = document.createElement('div'); row.className = 'up-row';
     row.innerHTML = `<div class="cname" style="grid-column:1/3">Color de detalle</div><div class="swatches" style="grid-column:1/3"></div>`;
     for (const c of ACCENTS) {
@@ -1403,7 +1435,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && sta
 function resize() {
   const w = innerWidth, h = innerHeight;
   renderer.setSize(w, h, false); camera.aspect = w / h;
-  camera.fov = w / h < 0.7 ? 54 : 46; camera.updateProjectionMatrix();
+  camera.fov = w / h < 0.7 ? 64 : 50; camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize); resize();
 
@@ -1411,13 +1443,17 @@ const camPos = V(), camTgt = V();
 function updateCamera(dt) {
   if (state === 'menu' || state === 'garage') {
     const portrait = camera.aspect < 0.8;
-    camPos.set(0, portrait ? 1.7 : 1.3, portrait ? (state === 'garage' ? 5.2 : 4.3) : 3.2);
-    camTgt.set(0, state === 'garage' ? (portrait ? 0.15 : 0.8) : (portrait ? 1.45 : 1.05), 0);
+    // se aleja según lo alto que sea el robot
+    const H = player ? player.Lg.height + player.headTop : 2.1;
+    camPos.set(0, H * (portrait ? 0.82 : 0.62), H * (portrait ? (state === 'garage' ? 2.5 : 2.08) : 1.55));
+    camTgt.set(0, H * (state === 'garage' ? (portrait ? 0.07 : 0.38) : (portrait ? 0.7 : 0.5)), 0);
   } else if (player && enemy) {
-    const px = player.torso.position.x;
-    const C = [2.3, 2.95, 3.0, 1.3];
-    camPos.set(px * 0.7 + C[0], C[1], DIST + C[2]);
-    camTgt.set(px * 0.35 - enemy.torso.position.x * 0.25 - 0.1, C[3], -DIST - 0.1);
+    const px = player.torso.position.x, ex = -enemy.torso.position.x;
+    const myHead = player.torso.position.y + player.headTop;
+    const eMid = enemy.torso.position.y + enemy.tH * 0.6;
+    // detrás de tu robot, a la altura de su cabeza, mirando al rival
+    camPos.set(px * 0.75 + ex * 0.25, Math.max(1.9, myHead + 0.35), DIST + 2.3);
+    camTgt.set(px * 0.3 + ex * 0.7, eMid * 0.85 + 0.15, -DIST);
     if (state === 'ko' && fight.result?.ko) { camPos.set(0.9, 2.3, DIST + 1.8); camTgt.set(0, 0.9, -DIST * (fight.result.win ? 1 : -1)); }
   }
   const k = 1 - Math.exp(-4 * dt);
