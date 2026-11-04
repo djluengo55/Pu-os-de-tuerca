@@ -108,3 +108,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-family:inherit;font-weight:700;font-size:13px;border-radius:10px;padding:7px 10px;border:2px solid var(--line);background:#2a2732;color:var(--mut);cursor:pointer}
 .chip.on{background:var(--acc);border-color:#fff3c9;color:#1a1206}
+.install-text{font-size:16px;line-height:1.45;text-align:left;width:100%}
+.install-text ol{margin:6px 0 0;padding-left:22px}
+.install-text li{margin:6px 0}
+.install-text b{color:var(--acc)}

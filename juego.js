@@ -1280,7 +1280,7 @@ function updateHud() {
 }
 
 // ================= pantallas =================
-const screens = ['menu', 'garage', 'hud', 'pause', 'result', 'unlock'];
+const screens = ['menu', 'garage', 'hud', 'pause', 'result', 'unlock', 'install'];
 function show(id, overlay = false) {
   for (const s of screens) {
     if (overlay && s === 'hud') continue;
@@ -1441,9 +1441,29 @@ const titleUp = () => {
 title.addEventListener('pointerup', titleUp);
 title.addEventListener('pointercancel', () => { if (holdTimer) titleUp(); });
 
+// ---------- descargar (instalar como app) ----------
+let installEvt = null;
+const standalone = () => matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone;
+if (!standalone()) $('#installBtn').classList.remove('hidden');
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; });
+addEventListener('appinstalled', () => { installEvt = null; $('#installBtn').classList.add('hidden'); });
+function installHelp() {
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  $('#installText').innerHTML = ios
+    ? 'Para tenerlo como app en el iPhone:<ol><li>Abrí este link en <b>Safari</b>.</li><li>Tocá el botón <b>Compartir</b> (el cuadrado con la flecha).</li><li>Elegí <b>Agregar a inicio</b>.</li></ol>'
+    : 'Para tenerlo como app:<ol><li>Tocá el menú <b>⋮</b> del navegador (arriba a la derecha).</li><li>Elegí <b>Instalar app</b> o <b>Agregar a la pantalla principal</b>.</li></ol>';
+  show('install', true);
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
 // ---------- botones ----------
 const on = (id, fn) => $(id).addEventListener('click', () => { Sfx.init(); Sfx.click(); fn(); });
 on('#playBtn', () => startFight());
+on('#installBtn', async () => {
+  if (installEvt) { installEvt.prompt(); const r = await installEvt.userChoice; installEvt = null; if (r.outcome === 'accepted') $('#installBtn').classList.add('hidden'); }
+  else installHelp();
+});
+on('#installClose', () => show('menu'));
 on('#garageBtn', () => openGarage());
 on('#garageBack', () => { closeGarage(); toMenu(); });
 on('#garageFight', () => { closeGarage(); startFight(); });

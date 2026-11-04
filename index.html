@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilo.css">
 <link rel="icon" href="icono.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icono.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
@@ -32,6 +32,7 @@
   <div class="menu-bottom">
     <button id="playBtn" class="btn big">¡A PELEAR!</button>
     <button id="garageBtn" class="btn alt">GARAJE</button>
+    <button id="installBtn" class="btn alt hidden">⬇ DESCARGAR</button>
     <p id="menuStats" class="tiny"></p>
   </div>
 </section>
@@ -99,6 +100,15 @@
     <div id="unlockList" class="unlock-list"></div>
     <button id="unlockGo" class="btn big">VER EN EL GARAJE</button>
     <button id="unlockClose" class="btn alt">DESPUÉS</button>
+  </div>
+</section>
+
+<!-- INSTALAR -->
+<section id="install" class="screen dim hidden">
+  <div class="panel">
+    <h2>DESCARGAR</h2>
+    <div id="installText" class="install-text"></div>
+    <button id="installClose" class="btn">ENTENDIDO</button>
   </div>
 </section>
 
