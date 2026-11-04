@@ -424,12 +424,12 @@ class Robot {
   }
   placeForFight() { this.root.position.set(0, 0, this.side * DIST); this.root.rotation.set(0, this.side > 0 ? 0 : Math.PI, 0); }
   setGhost() {
-    // tu robot se ve al 25%: así siempre ves al rival a través de él
+    // tu robot se ve al 15%: así siempre ves al rival a través de él
     const map = new Map();
     this.root.traverse((o) => {
       if (!o.isMesh) return;
       let c = map.get(o.material);
-      if (!c) { c = o.material.clone(); c.transparent = true; c.opacity = 0.25; c.depthWrite = false; map.set(o.material, c); }
+      if (!c) { c = o.material.clone(); c.transparent = true; c.opacity = 0.15; c.depthWrite = false; map.set(o.material, c); }
       o.material = c;
     });
     this.voxMat = map.get(this.voxMat) || this.voxMat; this.coreMat = map.get(this.coreMat) || this.coreMat;
@@ -1410,7 +1410,7 @@ function renderGarage() {
   persist();
 }
 
-// ---------- modo creador: tocar el título 5 veces seguidas (o abrir con ?creador) ----------
+// ---------- modo creador ----------
 let titleTaps = 0, titleTimer = 0;
 function setCreator(on) {
   save.creator = on; persist(); refreshMenu();
@@ -1421,12 +1421,25 @@ function popMenuNote(text) {
   const n = $('#menuStats'); const prev = n.textContent; n.textContent = text; n.style.color = 'var(--acc)';
   setTimeout(() => { n.style.color = ''; refreshMenu(); }, 2500);
 }
-$('.title').addEventListener('click', () => {
-  Sfx.init(); titleTaps++; clearTimeout(titleTimer);
-  titleTimer = setTimeout(() => { titleTaps = 0; }, 1500);
-  if (titleTaps >= 5) { titleTaps = 0; setCreator(!save.creator); }
+// 4 toques cortos y el 5.º manteniendo apretado 5 segundos
+let holdTimer = 0;
+const title = $('.title');
+title.style.touchAction = 'none';
+title.addEventListener('contextmenu', (e) => e.preventDefault());
+title.addEventListener('pointerdown', () => {
+  Sfx.init(); clearTimeout(titleTimer);
+  if (titleTaps === 4) {
+    title.style.transition = 'transform 5s linear'; title.style.transform = 'scale(0.92)';
+    holdTimer = setTimeout(() => { titleTaps = 0; holdTimer = 0; title.style.transition = ''; title.style.transform = ''; setCreator(!save.creator); }, 5000);
+  }
 });
-if (new URLSearchParams(location.search).has('creador') && !save.creator) { save.creator = true; persist(); }
+const titleUp = () => {
+  if (holdTimer) { clearTimeout(holdTimer); holdTimer = 0; titleTaps = 0; title.style.transition = 'transform .2s'; title.style.transform = ''; return; }
+  titleTaps = Math.min(4, titleTaps + 1);
+  clearTimeout(titleTimer); titleTimer = setTimeout(() => { titleTaps = 0; }, 1500);
+};
+title.addEventListener('pointerup', titleUp);
+title.addEventListener('pointercancel', () => { if (holdTimer) titleUp(); });
 
 // ---------- botones ----------
 const on = (id, fn) => $(id).addEventListener('click', () => { Sfx.init(); Sfx.click(); fn(); });
