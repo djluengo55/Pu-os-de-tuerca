@@ -95,6 +95,25 @@ const defaultSave = () => ({
   look: { eyes: 'saltones', deco: 'nada', mouth: 'nada', shape: 'auto', twoTone: false, accent: '#2b2b33', legLen: 1, torsoH: 0, torsoW: 0, armLen: 1, neck: 0 },
   stats: { wins: 0, losses: 0, kos: 0, limbs: 0 },
 });
+// El juego vive en tuercapp.com.ar/pelea/. Si se abre en la dirección vieja (github.io),
+// manda allá y se lleva el avance en el link (después de #, no viaja a ningún servidor).
+const CASA = 'https://tuercapp.com.ar/pelea/';
+if (location.hostname.endsWith('github.io')) {
+  let datos = '';
+  try { const s = localStorage.getItem(KEY); if (s) datos = '#traer=' + encodeURIComponent(s); } catch (e) {}
+  location.replace(CASA + datos);
+  throw new Error('Mudado a ' + CASA); // corta acá: no arranca el juego en la dirección vieja
+}
+// Llegó desde la dirección vieja con su avance: lo guarda si acá no hay uno mejor.
+if (location.hash.startsWith('#traer=')) {
+  try {
+    const traido = JSON.parse(decodeURIComponent(location.hash.slice(7)));
+    const actual = JSON.parse(localStorage.getItem(KEY) || 'null');
+    const nivel = (s) => (s && s.v === 1 ? (s.level || 0) * 1e6 + (s.coins || 0) : -1);
+    if (nivel(traido) > nivel(actual)) localStorage.setItem(KEY, JSON.stringify(traido));
+  } catch (e) {}
+  history.replaceState(null, '', location.pathname);
+}
 function loadSave() {
   try {
     const s = JSON.parse(localStorage.getItem(KEY));

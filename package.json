@@ -1,0 +1,9 @@
+{
+  "name": "punos-de-tuerca",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "publicar": "node scripts/publicar.mjs"
+  },
+  "license": "UNLICENSED"
+}

@@ -2,7 +2,7 @@
 
 Peleas de robots de bloques para el celular. Armá tu robot en el garaje y rompé al rival a puñetazos.
 
-**Jugar:** https://djluengo55.github.io/Pu-os-de-tuerca/
+**Jugar:** https://tuercapp.com.ar/pelea/
 
 ## Cómo se juega
 - Mantené apretado y arrastrá: tu robot se mueve a los costados, se agacha o se estira.
